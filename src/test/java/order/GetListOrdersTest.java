@@ -1,22 +1,19 @@
 package order;
 
-import java.util.List;
 import org.junit.Test;
+import java.util.List;
 import org.junit.Before;
-import data.DataCustomer;
 import java.util.ArrayList;
-import io.qameta.allure.Step;
+import functions.OrderFunctions;
 import org.junit.runner.RunWith;
 import io.restassured.RestAssured;
 import org.junit.runners.Parameterized;
 import io.restassured.response.Response;
 import io.qameta.allure.junit4.DisplayName;
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.notNullValue;
 
 @DisplayName("Check get list orders")
 @RunWith(Parameterized.class)
-public class GetListOrdersTest {
+public class GetListOrdersTest extends OrderFunctions {
     private final String firstName;
     private final String lastName;
     private final String address;
@@ -65,29 +62,10 @@ public class GetListOrdersTest {
 
     @Test
     public void getListOrdersTest() {
-        createOrdersList();
-        Response response = sendGetRequestGetOrdersList();
-        checkGetOrdersList(response);
-    }
-
-    @Step("Create list orders")
-    public void createOrdersList() {
-        DataCustomer customer = new DataCustomer(firstName, lastName, address,
+        createOrdersList(firstName, lastName, address,
                 metroStation, phone, rentTime, deliveryDate,
                 comment, color);
-        given().header("Content-type", "application/json")
-                .body(customer)
-                .post("/api/v1/orders");
-    }
-
-    @Step("Send GET request to /api/v1/orders to get list orders")
-    public Response sendGetRequestGetOrdersList() {
-        return given()
-                .header("Content-type", "application/json")
-                .get("/api/v1/orders");
-    }
-    @Step("Check get list orders")
-    public void checkGetOrdersList(Response response) {
-        response.then().assertThat().body("orders", notNullValue()).and().statusCode(200);
+        Response response = sendGetRequestGetOrdersList();
+        checkGetOrdersList(response, "orders", 200);
     }
 }
